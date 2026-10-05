@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fajrezzz — Trading Journal V4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --bg: #E9EDF1;
+    --surface: #FFFFFF;
+    --ink: #14202B;
+    --muted: #566573;
+    --line: #D3DAE1;
+    --win: #1E9E64;
+    --win-ink: #0E6B42;
+    --loss: #D04444;
+    --loss-ink: #A12727;
+    --gold: #A87A12;
+    --flat: #E3E8ED;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1419;
+      --surface: #161E26;
+      --ink: #E8EEF3;
+      --muted: #95A3B0;
+      --line: #2A3641;
+      --win: #2FBF7D;
+      --win-ink: #6BE0A8;
+      --loss: #E85D5D;
+      --loss-ink: #FF9C9C;
+      --gold: #E2B54D;
+      --flat: #202A33;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1419;
+    --surface: #161E26;
+    --ink: #E8EEF3;
+    --muted: #95A3B0;
+    --line: #2A3641;
+    --win: #2FBF7D;
+    --win-ink: #6BE0A8;
+    --loss: #E85D5D;
+    --loss-ink: #FF9C9C;
+    --gold: #E2B54D;
+    --flat: #202A33;
+    color-scheme: dark;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.45;
+    font-variant-numeric: tabular-nums;
+    -webkit-text-size-adjust: 100%;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 18px 14px 40px; }
+
+  /* Header */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .brand { font-size: 15px; font-weight: 700; letter-spacing: 0.01em; display: flex; align-items: center; gap: 8px; }
+  .brand i { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); display: inline-block; }
+  .btn {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-weight: 600;
+    font-size: 13.5px;
+  }
+  .btn:hover { border-color: var(--muted); }
+  .btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .btn.primary:hover { opacity: 0.9; }
+
+  /* Month bar */
+  .monthbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .monthbar h1 {
+    margin: 0;
+    font-size: clamp(28px, 6vw, 44px);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .navbtns { display: flex; gap: 6px; align-items: center; }
+  .iconbtn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    display: grid; place-items: center;
+    font-size: 18px; font-weight: 700; line-height: 1;
+  }
+  .iconbtn:hover { border-color: var(--muted); }
+
+  /* Summary */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 2px solid var(--ink);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 16px;
+  }
+  .sum-item { padding: 10px 4px 10px 0; min-width: 0; }
+  .sum-item + .sum-item { }
+  .sum-item .k { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .sum-item .v { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+  .sum-item .s { font-size: 12.5px; color: var(--muted); }
+  .sum-item.net { grid-column: 1 / -1; border-bottom: 1px solid var(--line); }
+  .sum-item.net .v { font-size: clamp(30px, 8vw, 40px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .pos { color: var(--win-ink); }
+  .neg { color: var(--loss-ink); }
+
+  /* Layout */
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+
+  /* Calendar */
+  .cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)) minmax(0, 1.15fr); gap: 4px; }
+  .cal .hd { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; padding: 2px 0 4px; }
+  .cell, .wk {
+    border-radius: 6px;
+    min-height: 62px;
+    padding: 5px 3px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    min-width: 0;
+  }
+  .cell.out { background: transparent; border-color: transparent; }
+  .cell.day { cursor: pointer; width: 100%; }
+  .cell.day:hover { border-color: var(--muted); }
+  .cell.win, .wk.win { background: color-mix(in srgb, var(--win) var(--t, 20%), var(--surface)); border-color: color-mix(in srgb, var(--win) 55%, var(--line)); }
+  .cell.loss, .wk.loss { background: color-mix(in srgb, var(--loss) var(--t, 20%), var(--surface)); border-color: color-mix(in srgb, var(--loss) 55%, var(--line)); }
+  .cell.flat, .wk.flat { background: var(--flat); }
+  .cell.sel { outline: 2.5px solid var(--ink); outline-offset: 1px; }
+  .cell .d { font-size: 12px; font-weight: 600; min-width: 20px; line-height: 20px; border-radius: 999px; }
+  .cell.today .d { background: var(--gold); color: #fff; }
+  :root[data-theme="dark"] .cell.today .d { color: #1a1305; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cell.today .d { color: #1a1305; } }
+  .cell .amt, .wk .amt { font-weight: 800; font-size: 12px; letter-spacing: -0.02em; }
+  .cell .cnt { font-size: 10.5px; color: var(--muted); line-height: 1; }
+  .cell.win .cnt, .cell.loss .cnt { color: var(--ink); opacity: 0.75; }
+  .cell .cnt i { display: none; font-style: normal; }
+  .cell .spacer { height: 10px; }
+  .wk { background: transparent; border-style: dashed; justify-content: center; }
+  .wk.win, .wk.loss { border-style: solid; }
+  .wk .amt { font-size: 12px; }
+  .wk .cnt { font-size: 10.5px; color: var(--muted); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend b { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid var(--line); }
+  .legend .g { background: color-mix(in srgb, var(--win) 40%, var(--surface)); }
+  .legend .r { background: color-mix(in srgb, var(--loss) 40%, var(--surface)); }
+  .legend .f { background: var(--flat); }
+
+  /* Panel */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    align-self: start;
+  }
+  .panel:focus { outline: none; }
+  .p-head h2 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+  .day-net { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+  .day-net strong { font-weight: 700; }
+
+  .tlist { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .tlist .empty { color: var(--muted); font-size: 14px; padding: 10px 0 2px; }
+  .tr { border: 1px solid var(--line); border-left-width: 5px; border-radius: 8px; padding: 9px 11px; }
+  .tr.win { border-left-color: var(--win); }
+  .tr.loss { border-left-color: var(--loss); }
+  .tr.flat { border-left-color: var(--muted); }
+  .tr-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .side { font-weight: 700; font-size: 13.5px; padding: 1px 8px; border-radius: 999px; background: var(--flat); }
+  .tr-meta { color: var(--muted); font-size: 13px; flex: 1 1 auto; min-width: 0; }
+  .tr-pnl { font-size: 16px; font-weight: 800; }
+  .tr.win .tr-pnl { color: var(--win-ink); }
+  .tr.loss .tr-pnl { color: var(--loss-ink); }
+  .tr-note { margin: 5px 0 0; font-size: 13.5px; overflow-wrap: anywhere; }
+  .tr-act { margin-top: 6px; display: flex; gap: 14px; }
+  .link { background: none; border: none; padding: 2px 0; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+  .link:hover { color: var(--ink); }
+  .link.danger:hover, .link.danger.confirm { color: var(--loss-ink); }
+
+  form { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+  form h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; }
+  fieldset { border: none; margin: 0; padding: 0; min-width: 0; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 999px; padding: 3px; margin-bottom: 12px; }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label { text-align: center; padding: 7px 0; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; color: var(--muted); }
+  .seg input:checked + label { background: var(--ink); color: var(--surface); }
+  .seg input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .field.full { grid-column: 1 / -1; }
+  .field label { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .field input {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 16px;
+  }
+  .field input:focus-visible { outline: 2px solid var(--gold); outline-offset: 0; border-color: var(--gold); }
+  .hint { margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 14px; }
+  .actions .btn { padding: 10px 18px; font-size: 14.5px; }
+  #msg { min-height: 20px; margin: 10px 0 0; font-size: 13.5px; font-weight: 600; }
+  #msg.err { color: var(--loss-ink); }
+  #msg.ok { color: var(--win-ink); }
+
+  .foot { margin-top: 26px; font-size: 12.5px; color: var(--muted); max-width: 62ch; }
+
+  @media (min-width: 560px) {
+    .summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .sum-item.net { grid-column: span 2; border-bottom: none; }
+    .sum-item { padding: 12px 8px 12px 0; }
+    .sum-item:not(.net) { border-left: 1px solid var(--line); padding-left: 12px; }
+    .sum-item:nth-child(2) { border-left: none; padding-left: 0; }
+    .cal { gap: 6px; }
+    .cell, .wk { min-height: 84px; padding: 7px 5px 6px; }
+    .cell .amt, .wk .amt { font-size: 16px; }
+    .cell .cnt i { display: inline; }
+    .cell .cnt, .wk .cnt { font-size: 11.5px; }
+    .cell .d { font-size: 13px; min-width: 24px; line-height: 24px; }
+  }
+  @media (min-width: 920px) {
+    .wrap { padding: 28px 24px 56px; }
+    .layout { grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; }
+    .panel { position: sticky; top: calc(16px + env(safe-area-inset-top, 0px)); }
+    .cell, .wk { min-height: 96px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+  /* ===== Fajrezzz V3 Dashboard ===== */
+  .hero-v3{position:relative;overflow:hidden;margin:4px 0 18px;padding:22px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,rgba(230,184,74,.10),rgba(26,43,64,.72) 45%,rgba(7,17,29,.92));box-shadow:0 18px 50px rgba(0,0,0,.18)}
+  .hero-v3:after{content:"";position:absolute;width:190px;height:190px;border-radius:50%;right:-70px;top:-80px;background:rgba(230,184,74,.12);filter:blur(2px);pointer-events:none}
+  .hero-v3 .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:7px}
+  .hero-v3 h2{margin:0;font-size:clamp(25px,6vw,38px);letter-spacing:-.04em}
+  .hero-v3 h2 span{color:var(--gold)}
+  .hero-v3 p{margin:7px 0 0;color:var(--muted);font-size:13px}
+  .hero-badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
+  .hero-badge{padding:6px 9px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.035);font-size:11px;font-weight:700;color:var(--muted)}
+  .hero-badge b{color:var(--ink)}
+  .v3-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px}
+  .v3-card{min-width:0;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 10px 30px rgba(0,0,0,.08);position:relative;overflow:hidden}
+  .v3-card:before{content:"";position:absolute;left:0;top:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+  .v3-card .label{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+  .v3-card .big{font-size:21px;font-weight:800;letter-spacing:-.03em;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .v3-card .small{font-size:10px;color:var(--muted);margin-top:3px}
+  .v3-card .pos{color:var(--win-ink)} .v3-card .neg{color:var(--loss-ink)}
+  .analytics-v3{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(230px,.75fr);gap:14px;margin-bottom:18px}
+  .chart-card,.insight-card{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:15px;box-shadow:0 10px 30px rgba(0,0,0,.07)}
+  .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .section-head strong{font-size:14px}.section-head span{font-size:10px;color:var(--muted);font-weight:700}
+  .chart-wrap{height:150px}.chart-wrap svg{width:100%;height:100%;display:block}
+  .chart-empty{height:150px;display:grid;place-items:center;color:var(--muted);font-size:12px;border:1px dashed var(--line);border-radius:12px}
+  .insights{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .insight{padding:11px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+  .insight .k{font-size:10px;color:var(--muted);font-weight:700}.insight .v{font-size:15px;font-weight:800;margin-top:3px}
+  .mini-nav{display:flex;gap:6px;margin:0 0 12px;overflow:auto;padding-bottom:2px}
+  .mini-nav button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:7px 11px;font:inherit;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}
+  .mini-nav button.active{background:linear-gradient(135deg,#f0c75c,#c99625);color:#201804;border-color:transparent}
+  @media(max-width:760px){.v3-grid{grid-template-columns:1fr 1fr}.analytics-v3{grid-template-columns:1fr}.hero-v3{padding:18px}}
+  @media(max-width:390px){.v3-card{padding:11px}.v3-card .big{font-size:18px}.hero-v3 h2{font-size:27px}}
+
+
+    .rate-badge{display:inline-flex;align-items:center;min-height:34px;padding:0 10px;border:1px solid var(--line);border-radius:999px;background:rgba(10,24,40,.78);color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+    .rate-badge.live{color:#75e7b1;border-color:rgba(60,210,150,.35)}
+    .rate-badge.stale{color:#f2ca6b;border-color:rgba(240,199,92,.3)}
+    .fx-refresh{width:34px;min-width:34px;height:34px;padding:0;border-radius:999px;display:inline-grid;place-items:center;font-size:17px;font-weight:900}
+    .fx-refresh.spinning{animation:fxspin .7s linear infinite}
+    @keyframes fxspin{to{transform:rotate(360deg)}}
+
+    @media(max-width:559px){.rate-badge{font-size:10px;min-height:32px;padding:0 8px}.top{gap:8px}}
+</style>
+
+<style id="enhanced-ui">
+  :root {
+    --bg: #07111f;
+    --surface: #0d1a2b;
+    --surface2: #102238;
+    --ink: #edf4ff;
+    --muted: #8fa3bb;
+    --line: #20344b;
+    --gold: #e6b84a;
+    --gold2: #f6d77a;
+    --win: #29c78a;
+    --win-ink: #58e0aa;
+    --loss: #ff5f6d;
+    --loss-ink: #ff8b95;
+    --flat: #1b2a3b;
+  }
+
+  html, body {
+    background:
+      radial-gradient(circle at 12% -5%, rgba(230,184,74,.12), transparent 30%),
+      radial-gradient(circle at 92% 5%, rgba(63,125,255,.10), transparent 28%),
+      var(--bg);
+  }
+
+  body {
+    min-height: 100vh;
+    color: var(--ink);
+  }
+
+  .wrap {
+    max-width: 1180px;
+    padding: 20px 14px 50px;
+  }
+
+  .top {
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 18px;
+    background: rgba(13,26,43,.78);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 12px 35px rgba(0,0,0,.18);
+  }
+
+  .brand {
+    font-size: 15px;
+    letter-spacing: .02em;
+  }
+
+  .brand i {
+    width: 11px;
+    height: 11px;
+    background: linear-gradient(135deg,var(--gold2),var(--gold));
+    box-shadow: 0 0 18px rgba(230,184,74,.5);
+  }
+
+  .top .btn {
+    border-color: rgba(230,184,74,.28);
+  }
+
+  .monthbar {
+    margin-bottom: 18px;
+    align-items: center;
+  }
+
+  .monthbar h1 {
+    font-size: clamp(30px, 7vw, 50px);
+    letter-spacing: -.035em;
+    text-shadow: 0 8px 30px rgba(0,0,0,.25);
+  }
+
+  .iconbtn, .monthbar .btn {
+    background: var(--surface);
+    border-color: var(--line);
+    box-shadow: 0 6px 18px rgba(0,0,0,.12);
+  }
+
+  .iconbtn:hover, .monthbar .btn:hover {
+    border-color: rgba(230,184,74,.6);
+    transform: translateY(-1px);
+  }
+
+  .summary {
+    gap: 1px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--line);
+    margin-bottom: 20px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.18);
+  }
+
+  .sum-item {
+    background: linear-gradient(145deg, rgba(16,34,56,.98), rgba(10,24,40,.98));
+    padding: 15px 14px;
+  }
+
+  .sum-item.net {
+    background:
+      radial-gradient(circle at 80% 0%, rgba(230,184,74,.12), transparent 35%),
+      linear-gradient(145deg, #102641, #0b1829);
+  }
+
+  .sum-item .k {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .sum-item .v {
+    margin-top: 3px;
+    font-size: 22px;
+  }
+
+  .sum-item.net .v {
+    font-size: clamp(32px, 8vw, 44px);
+  }
+
+  .layout {
+    gap: 22px;
+  }
+
+  .cal {
+    gap: 5px;
+  }
+
+  .cal .hd {
+    color: #71869e;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-size: 10px;
+  }
+
+  .cell, .wk {
+    min-height: 68px;
+    border-radius: 11px;
+    border-color: var(--line);
+    background: rgba(13,26,43,.9);
+    box-shadow: inset 0 1px rgba(255,255,255,.025);
+    transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+  }
+
+  .cell.day:hover {
+    transform: translateY(-2px);
+    border-color: rgba(230,184,74,.5);
+    box-shadow: 0 8px 20px rgba(0,0,0,.18);
+  }
+
+  .cell.sel {
+    outline: 2px solid var(--gold);
+    outline-offset: 1px;
+    box-shadow: 0 0 0 4px rgba(230,184,74,.08);
+  }
+
+  .cell.today .d {
+    background: linear-gradient(135deg,var(--gold2),var(--gold));
+    color: #211805;
+    box-shadow: 0 3px 10px rgba(230,184,74,.25);
+  }
+
+  .cell .amt, .wk .amt {
+    font-size: 12px;
+  }
+
+  .cell.win, .wk.win {
+    background: linear-gradient(145deg, rgba(41,199,138,.19), rgba(13,26,43,.96));
+    border-color: rgba(41,199,138,.35);
+  }
+
+  .cell.loss, .wk.loss {
+    background: linear-gradient(145deg, rgba(255,95,109,.16), rgba(13,26,43,.96));
+    border-color: rgba(255,95,109,.34);
+  }
+
+  .cell.flat, .wk.flat {
+    background: #132337;
+  }
+
+  .legend {
+    padding: 11px 2px 0;
+    color: var(--muted);
+  }
+
+  .legend b {
+    border: none;
+    box-shadow: 0 0 0 1px rgba(255,255,255,.07);
+  }
+
+  .panel {
+    background:
+      radial-gradient(circle at 100% 0%, rgba(230,184,74,.07), transparent 30%),
+      linear-gradient(145deg, rgba(16,34,56,.98), rgba(9,21,35,.98));
+    border-color: var(--line);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 18px 45px rgba(0,0,0,.22);
+  }
+
+  .p-head {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .p-head h2 {
+    font-size: 20px;
+  }
+
+  .day-net {
+    margin-top: 4px;
+  }
+
+  .tr {
+    background: rgba(7,17,31,.52);
+    border-color: var(--line);
+    border-left-width: 4px;
+    border-radius: 12px;
+    padding: 11px 12px;
+  }
+
+  .tr:hover {
+    border-color: rgba(230,184,74,.35);
+  }
+
+  .side {
+    background: #1a2b40;
+    color: #dce9f8;
+  }
+
+  .tr.win .side {
+    background: rgba(41,199,138,.13);
+    color: var(--win-ink);
+  }
+
+  .tr.loss .side {
+    background: rgba(255,95,109,.12);
+    color: var(--loss-ink);
+  }
+
+  form {
+    margin-top: 20px;
+    padding-top: 18px;
+  }
+
+  form h3 {
+    font-size: 16px;
+  }
+
+  .seg {
+    background: #081524;
+    border-color: var(--line);
+  }
+
+  .seg input:checked + label {
+    background: linear-gradient(135deg,#f0c75c,#c99625);
+    color: #201804;
+    box-shadow: 0 4px 14px rgba(230,184,74,.18);
+  }
+
+  .field input {
+    background: #081524;
+    border-color: var(--line);
+    color: var(--ink);
+    border-radius: 10px;
+  }
+
+  .field input::placeholder {
+    color: #5f748c;
+  }
+
+  .field input:focus-visible {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(230,184,74,.10);
+  }
+
+  .btn {
+    background: #102238;
+    color: var(--ink);
+    border-color: var(--line);
+    transition: transform .16s ease, border-color .16s ease, opacity .16s ease;
+  }
+
+  .btn.primary {
+    background: linear-gradient(135deg,#f0c75c,#c99625);
+    color: #211805;
+    border-color: transparent;
+    box-shadow: 0 8px 20px rgba(230,184,74,.17);
+  }
+
+  .btn.primary:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  .foot {
+    opacity: .8;
+    text-align: center;
+    margin: 30px auto 0;
+  }
+
+  @media (min-width: 560px) {
+    .cell, .wk {
+      min-height: 88px;
+      padding: 8px 6px;
+    }
+  }
+
+  @media (min-width: 920px) {
+    .wrap { padding: 28px 24px 60px; }
+    .cell, .wk { min-height: 100px; }
+  }
+
+  @media (max-width: 559px) {
+    .summary {
+      grid-template-columns: 1fr 1fr;
+    }
+    .sum-item.net {
+      grid-column: 1 / -1;
+    }
+    .monthbar h1 {
+      flex-basis: 100%;
+    }
+    .navbtns {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+</style>
+
+
+<style id="calendar-picker-style">
+  .monthpicker {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    font-size: clamp(30px, 7vw, 50px);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -.035em;
+    cursor: pointer;
+  }
+  .monthpicker::after {
+    content: "⌄";
+    display: inline-block;
+    margin-left: 10px;
+    font-size: .42em;
+    vertical-align: middle;
+    color: var(--gold);
+  }
+  .monthpicker:hover { opacity: .86; }
+
+  .picker-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(2,8,16,.68);
+    backdrop-filter: blur(8px);
+  }
+  .picker-backdrop.open { display: flex; }
+
+  .picker-card {
+    width: min(430px, 100%);
+    max-height: min(620px, 90vh);
+    overflow: auto;
+    background: linear-gradient(145deg,#102238,#0b1728);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow: 0 24px 70px rgba(0,0,0,.42);
+  }
+  .picker-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .picker-head strong { font-size: 17px; }
+  .picker-close {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: #12263c;
+    color: var(--ink);
+    font-size: 21px;
+    cursor: pointer;
+  }
+  .picker-current {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-bottom: 16px;
+  }
+  .picker-select {
+    min-height: 46px;
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #081524;
+    color: var(--ink);
+    padding: 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .picker-months {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 8px;
+  }
+  .picker-month {
+    min-height: 46px;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    background: #0c1b2d;
+    color: var(--muted);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .picker-month:hover { border-color: var(--gold); color: var(--ink); }
+  .picker-month.active {
+    background: linear-gradient(135deg,#f0c75c,#c99625);
+    border-color: transparent;
+    color: #211805;
+  }
+  .picker-actions {
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+  }
+  .picker-actions button {
+    flex:1;
+    min-height:44px;
+    border-radius:11px;
+    border:1px solid var(--line);
+    background:#12263c;
+    color:var(--ink);
+    font-weight:700;
+  }
+  .picker-actions .picker-now {
+    background:linear-gradient(135deg,#f0c75c,#c99625);
+    color:#211805;
+    border-color:transparent;
+  }
+  @media (max-width: 420px) {
+    .picker-backdrop { padding: 10px; }
+    .picker-card { padding: 14px; border-radius: 18px; }
+    .picker-months { gap: 6px; }
+    .picker-month { min-height: 43px; font-size: 13px; }
+  }
+</style>
+
+
+<style id="v4-navigation-capital">
+  .app-nav{position:sticky;top:10px;z-index:80;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 16px;padding:6px;border:1px solid var(--line);border-radius:18px;background:rgba(13,26,43,.86);backdrop-filter:blur(16px);box-shadow:0 12px 35px rgba(0,0,0,.22)}
+  .app-nav button{border:0;background:transparent;color:var(--muted);border-radius:13px;padding:9px 8px;font:inherit;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer}
+  .app-nav button span{font-size:16px}.app-nav button.active{background:linear-gradient(135deg,#f0c75c,#c99625);color:#201804;box-shadow:0 5px 16px rgba(230,184,74,.2)}
+  .page{display:none;animation:pageIn .22s ease}.page.active{display:block}@keyframes pageIn{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .capital-backdrop{position:fixed;inset:0;z-index:1100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,8,16,.72);backdrop-filter:blur(9px)}
+  .capital-backdrop.open{display:flex}.capital-card{width:min(410px,100%);background:linear-gradient(145deg,#102238,#0b1728);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.45)}
+  .modal-copy{color:var(--muted);font-size:13px;margin:0 0 15px}.capital-card .field input{background:#081524;border-color:var(--line);color:var(--ink);border-radius:10px}
+  .capital-card .picker-actions{margin-top:18px}
+  .page#page-calendar .layout{margin-top:0}.page#page-trades .layout{display:block}
+  @media(max-width:560px){.app-nav{position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));top:auto;margin:0;padding:5px;border-radius:18px;box-shadow:0 12px 35px rgba(0,0,0,.45)}body{padding-bottom:76px}.app-nav button{padding:9px 5px}.app-nav button b{font-size:11px}.page#page-calendar .summary{margin-bottom:14px}.page#page-calendar .monthbar{padding-top:2px}.page#page-trades .panel{margin-top:0}}
+</style>
+
+<style id="v4-calendar-square-fix">
+  @media (max-width: 559px) {
+    .cal { gap: 5px; }
+    .cell, .wk {
+      min-height: 0 !important;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      padding: 7px 4px;
+      border-radius: 14px;
+    }
+    .cell .d { font-size: 13px; min-width: 26px; line-height: 26px; }
+    .cell .amt, .wk .amt { font-size: 11px; }
+    .cell .cnt, .wk .cnt { font-size: 9px; }
+    .wk { justify-content: center; }
+  }
+</style>
+
+
+<style id="v8-calendar-mobile-layout">
+  /* V8: kalender mobile dibuat lebih lapang dan tidak memotong angka */
+  @media (max-width: 559px) {
+    .page#page-calendar .layout > section[aria-label="Kalender trade"] {
+      overflow-x: auto;
+      overflow-y: visible;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .page#page-calendar .layout > section[aria-label="Kalender trade"]::-webkit-scrollbar {
+      display: none;
+    }
+
+    .page#page-calendar .cal {
+      width: max-content;
+      min-width: 516px;
+      grid-template-columns: repeat(7, 60px) 78px;
+      gap: 6px;
+    }
+
+    .page#page-calendar .cal .hd {
+      width: 60px;
+      font-size: 10px;
+      padding-bottom: 5px;
+    }
+    .page#page-calendar .cal .hd:last-child {
+      width: 78px;
+    }
+
+    .page#page-calendar .cell,
+    .page#page-calendar .wk {
+      width: auto;
+      min-width: 0;
+      height: 60px;
+      min-height: 60px !important;
+      aspect-ratio: 1 / 1;
+      padding: 6px 4px;
+      border-radius: 15px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .page#page-calendar .cell .d {
+      font-size: 13px;
+      min-width: 25px;
+      line-height: 25px;
+      flex: 0 0 auto;
+    }
+
+    .page#page-calendar .cell .amt,
+    .page#page-calendar .wk .amt {
+      font-size: 10.5px;
+      line-height: 1.05;
+      white-space: nowrap;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .page#page-calendar .cell .cnt,
+    .page#page-calendar .wk .cnt {
+      font-size: 8.5px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .page#page-calendar .cell .spacer {
+      height: 2px;
+    }
+
+    .page#page-calendar .wk {
+      width: 78px;
+      aspect-ratio: auto;
+    }
+
+    .page#page-calendar .legend {
+      margin-top: 12px;
+    }
+
+    /* Hint visual: calendar is intentionally swipeable on narrow screens */
+    .page#page-calendar .layout > section[aria-label="Kalender trade"]::after {
+      content: "Geser ke samping untuk melihat Pekan →";
+      display: block;
+      text-align: right;
+      margin: 7px 2px 0;
+      color: #71869e;
+      font-size: 10px;
+      letter-spacing: .02em;
+    }
+  }
+</style>
+
+
+<style id="v9-no-horizontal-calendar">
+@media (max-width: 559px) {
+  .page#page-calendar .layout > section[aria-label="Kalender trade"] {
+    overflow: visible !important;
+  }
+  .page#page-calendar .cal {
+    width: 100% !important;
+    min-width: 0 !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    gap: 5px !important;
+  }
+  .page#page-calendar .cal .hd {
+    width: auto !important;
+    min-width: 0 !important;
+    font-size: 10px !important;
+  }
+  .page#page-calendar .cal .hd:last-child,
+  .page#page-calendar .cal .wk {
+    display: none !important;
+  }
+  .page#page-calendar .cell {
+    width: auto !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    aspect-ratio: auto !important;
+    padding: 6px 3px !important;
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  .page#page-calendar .cell .d {
+    font-size: 13px !important;
+    min-width: 25px !important;
+    line-height: 25px !important;
+  }
+  .page#page-calendar .cell .amt {
+    font-size: 10px !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .page#page-calendar .cell .cnt {
+    font-size: 8px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+  .page#page-calendar .layout > section[aria-label="Kalender trade"]::after {
+    display: none !important;
+    content: none !important;
+  }
+}
+</style>
+
+<style id="online-v1">
+  .online-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .online-badge{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;cursor:pointer}
+  .online-badge.online{color:#8ff0b1;border-color:rgba(84,220,132,.35);background:rgba(35,150,76,.10)}
+  .online-badge.admin{color:#f0c75c;border-color:rgba(240,199,92,.35);background:rgba(240,199,92,.08)}
+  .online-backdrop{position:fixed;inset:0;z-index:1300;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,8,16,.76);backdrop-filter:blur(10px)}
+  .online-backdrop.open{display:flex}.online-card{width:min(440px,100%);background:linear-gradient(145deg,#102238,#0b1728);border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.5)}
+  .online-card h3{margin:0 0 7px}.online-card p{color:var(--muted);font-size:12px;line-height:1.5}.online-card .field{margin:10px 0}.online-card input{width:100%;box-sizing:border-box;background:#081524;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px;font:inherit}
+  .online-actions-row{display:flex;gap:8px;justify-content:flex-end;margin-top:15px;flex-wrap:wrap}.online-actions-row button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px;font-weight:800}.online-actions-row .primary{background:linear-gradient(135deg,#f0c75c,#c99625);color:#201804;border-color:transparent}
+  .online-status{font-size:11px;color:var(--muted);margin-top:9px;min-height:16px}.online-status.ok{color:#8ff0b1}.online-status.err{color:#ff8f9a}
+  @media(max-width:560px){.online-badge{padding:7px 8px}.top{gap:6px}.top>div:last-child{justify-content:flex-end}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand"><i aria-hidden="true"></i>Fajrezzz</div>
+    <div class="online-actions">
+      <span class="rate-badge stale" id="fxRateBadge" title="Kurs USD/IDR terbaru">USD/IDR • memuat...</span>
+      <button type="button" class="btn fx-refresh" id="fxRefreshBtn" aria-label="Refresh kurs USD/IDR" title="Refresh kurs USD/IDR">↻</button>
+      <button type="button" class="online-badge" id="onlineBadge">☁ Offline</button>
+      <button type="button" class="btn" id="capitalBtn" aria-label="Atur modal awal">Rp Modal</button>
+      <button type="button" class="btn" id="themeBtn" aria-label="Ganti tema">☀︎ / ☾</button>
+    </div>
+  </div>
+
+  <nav class="app-nav" aria-label="Navigasi utama">
+    <button type="button" class="active" data-page="overview"><span>⌂</span><b>Overview</b></button>
+    <button type="button" data-page="calendar"><span>▦</span><b>Calendar</b></button>
+    <button type="button" data-page="trades"><span>↗</span><b>Trades</b></button>
+  </nav>
+
+  <section class="page active" id="page-overview">
+  <section class="hero-v3" aria-label="Fajrezzz trading dashboard">
+    <div class="eyebrow">Personal Trading Journal</div>
+    <h2>FAJRE<span>ZZZ</span></h2>
+    <p>Track your trades. Read your performance. Improve your execution.</p>
+    <div class="hero-badges">
+      <span class="hero-badge">Market <b>XAU/USD</b></span>
+      <span class="hero-badge">Mode <b>Journal</b></span>
+      <span class="hero-badge">Data <b id="heroDataStatus">Local</b></span>
+    </div>
+  </section>
+
+  <div class="v3-grid" id="v3Stats" aria-label="Statistik trading"></div>
+  <div class="analytics-v3">
+    <section class="chart-card" aria-label="Equity curve">
+      <div class="section-head"><strong>Equity Curve</strong><span id="curveMeta">Cumulative P/L</span></div>
+      <div class="chart-wrap" id="equityChart"></div>
+    </section>
+    <section class="insight-card" aria-label="Performance insight">
+      <div class="section-head"><strong>Performance</strong><span>ALL TIME</span></div>
+      <div class="insights" id="v3Insights"></div>
+    </section>
+  </div>
+  </section>
+
+  <section class="page" id="page-calendar">
+  <div class="monthbar">
+    <button type="button" class="monthpicker" id="monthTitle" aria-label="Pilih bulan dan tahun"></button>
+    <div class="navbtns">
+      <button type="button" class="iconbtn" id="prevBtn" aria-label="Bulan sebelumnya">&#8249;</button>
+      <button type="button" class="btn" id="todayBtn">Hari ini</button>
+      <button type="button" class="iconbtn" id="nextBtn" aria-label="Bulan berikutnya">&#8250;</button>
+    </div>
+  </div>
+
+  <div class="capital-backdrop" id="capitalBackdrop" role="dialog" aria-modal="true" aria-labelledby="capitalTitle">
+    <div class="capital-card">
+      <div class="picker-head"><strong id="capitalTitle">Modal awal</strong><button type="button" class="picker-close" id="capitalClose" aria-label="Tutup">×</button></div>
+      <p class="modal-copy">Masukkan modal awal akun dalam Rupiah. Nilai ini hanya disimpan di browser perangkat ini.</p>
+      <div class="field"><label for="initialCapital">Modal awal (IDR)</label><input id="initialCapital" type="number" inputmode="decimal" step="0.01" min="0" placeholder="1000000"></div>
+      <div class="picker-actions"><button type="button" id="capitalCancel">Batal</button><button type="button" class="picker-now" id="capitalSave">Simpan</button></div>
+    </div>
+  </div>
+
+  <div class="online-backdrop" id="onlineSetupBackdrop" role="dialog" aria-modal="true" aria-labelledby="onlineSetupTitle">
+  <div class="online-card">
+    <div class="picker-head"><strong id="onlineSetupTitle">Fajrezzz Journal Online</strong><button type="button" class="picker-close" id="onlineSetupClose">×</button></div>
+    <p>Masukkan Supabase Project URL dan Publishable Key. Data jurnal akan disimpan online agar bisa dibuka dari HP/laptop lain.</p>
+    <div class="field"><label for="sbUrl">Supabase Project URL</label><input id="sbUrl" placeholder="https://xxxxx.supabase.co" autocomplete="off"></div>
+    <div class="field"><label for="sbKey">Publishable Key</label><input id="sbKey" placeholder="sb_publishable_..." autocomplete="off"></div>
+    <div class="online-actions-row"><button type="button" id="onlineSetupCancel">Batal</button><button type="button" id="onlineSetupSave" class="primary">Simpan & Hubungkan</button></div>
+    <div class="online-status" id="onlineSetupStatus"></div>
+  </div>
+</div>
+<div class="online-backdrop" id="adminBackdrop" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+  <div class="online-card">
+    <div class="picker-head"><strong id="adminTitle">Admin Fajrezzz Journal</strong><button type="button" class="picker-close" id="adminClose">×</button></div>
+    <p id="adminDescription">Login untuk menambah, mengubah, menghapus trade, dan mengubah modal.</p>
+    <div class="field"><label for="adminEmail">Email</label><input id="adminEmail" type="email" autocomplete="username"></div>
+    <div class="field"><label for="adminPassword">Password</label><input id="adminPassword" type="password" autocomplete="current-password"></div>
+    <div class="online-actions-row"><button type="button" id="adminLogout">Logout</button><button type="button" id="adminSync">↻ Sync</button><button type="button" id="adminImport">Import Local → Online</button><button type="button" id="adminLogin" class="primary">Login</button></div>
+    <div class="online-status" id="adminStatus"></div>
+  </div>
+</div>
+<div class="picker-backdrop" id="pickerBackdrop" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+    <div class="picker-card">
+      <div class="picker-head">
+        <strong id="pickerTitle">Pilih bulan & tahun</strong>
+        <button type="button" class="picker-close" id="pickerClose" aria-label="Tutup">×</button>
+      </div>
+      <div class="picker-current">
+        <select class="picker-select" id="pickerMonth" aria-label="Bulan"></select>
+        <select class="picker-select" id="pickerYear" aria-label="Tahun"></select>
+      </div>
+      <div class="picker-months" id="pickerMonths"></div>
+      <div class="picker-actions">
+        <button type="button" id="pickerCancel">Batal</button>
+        <button type="button" class="picker-now" id="pickerApply">Terapkan</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="summary" id="summary" aria-label="Ringkasan bulan ini"></section>
+
+  <div class="layout">
+    <section aria-label="Kalender trade">
+      <div class="cal" id="cal"></div>
+      <div class="legend">
+        <span><b class="g"></b>Profit</span>
+        <span><b class="r"></b>Loss</span>
+        <span><b class="f"></b>Impas</span>
+        <span>Angka di kotak = net P/L harian (IDR). Warna makin pekat, hasil makin besar.</span>
+      </div>
+    </section>
+  </section>
+
+  <section class="page" id="page-trades">
+    <aside class="panel" id="panel" aria-labelledby="dayTitle" tabindex="-1">
+      <div class="p-head">
+        <h2 id="dayTitle"></h2>
+        <p class="day-net" id="dayNet"></p>
+      </div>
+      <ul class="tlist" id="dayList"></ul>
+
+      <div id="viewerNotice" class="online-status" style="margin:10px 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);display:none">Mode Viewer: data ini hanya bisa dilihat. Login Admin untuk mengubah jurnal.</div>
+      <form id="tradeForm" novalidate>
+        <h3 id="formTitle">Tambah trade</h3>
+        <fieldset class="seg">
+          <legend class="sr">Arah posisi</legend>
+          <input type="radio" id="sBuy" name="side" value="buy" checked>
+          <label for="sBuy">Buy</label>
+          <input type="radio" id="sSell" name="side" value="sell">
+          <label for="sSell">Sell</label>
+        </fieldset>
+        <div class="grid2">
+          <div class="field">
+            <label for="fLot">Lot</label>
+            <input id="fLot" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.10">
+          </div>
+          <div class="field">
+            <label for="fPnl">P/L (IDR)</label>
+            <input id="fPnl" type="number" inputmode="decimal" step="0.01" placeholder="+125000 atau -40000" required>
+          </div>
+          <div class="field">
+            <label for="fEntry">Harga entry</label>
+            <input id="fEntry" type="number" inputmode="decimal" step="0.01" placeholder="2350.20">
+          </div>
+          <div class="field">
+            <label for="fExit">Harga exit</label>
+            <input id="fExit" type="number" inputmode="decimal" step="0.01" placeholder="2356.80">
+          </div>
+          <div class="field full">
+            <label for="fNote">Catatan</label>
+            <input id="fNote" type="text" maxlength="200" placeholder="Setup, alasan entry, evaluasi">
+          </div>
+        </div>
+        <p class="hint">P/L terisi otomatis dari entry, exit, dan lot (1 lot = 100 oz). Ubah manual jika ada spread atau swap.</p>
+        <div class="actions">
+          <button type="submit" class="btn primary" id="saveBtn">Simpan trade</button>
+          <button type="button" class="btn" id="cancelBtn" hidden>Batal</button>
+        </div>
+        <p id="msg" role="status" aria-live="polite"></p>
+      </form>
+    </aside>
+  </div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function () {
+  "use strict";
+
+  var KEY = "xauusd-journal-v1";
+  var CAPITAL_KEY = "fajrezzz-initial-capital-v1";
+  var MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+  var DAYS_LONG = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+  var DAYS_SHORT = ["Sen","Sel","Rab","Kam","Jum","Sab","Min"];
+
+  var $ = function (s) { return document.querySelector(s); };
+  var pad = function (n) { return String(n).padStart(2, "0"); };
+  var ymd = function (y, m, d) { return y + "-" + pad(m + 1) + "-" + pad(d); };
+  var round2 = function (n) { return Math.round(n * 100) / 100; };
+  var nf = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  var nfIDR = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 });
+  var USD_TO_IDR = Number(localStorage.getItem("fajrezzz-usd-idr-rate") || 17939.4);
+  var FX_RATE_KEY = "fajrezzz-usd-idr-rate";
+  var FX_UPDATED_KEY = "fajrezzz-usd-idr-updated";
+  var IDR_MIGRATION_KEY = "fajrezzz-idr-migrated-v1";
+  var SB_URL_KEY = "fajrezzz-supabase-url-v1";
+  var SB_KEY_KEY = "fajrezzz-supabase-key-v1";
+  /* Fajrezzz Journal Online - Supabase public configuration */
+  var SUPABASE_PROJECT_URL = "https://uwvahclrxhwsdueqlkon.supabase.co";
+  var SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7dI3LgIChRL0XeVbQAK2Xw_qFDBw0mf";
+  var supabaseClient = null;
+  var cloudConfigured = false;
+  var cloudAdmin = false;
+  var cloudLoading = false;
+
+
+  function todayStr() {
+    var t = new Date();
+    return ymd(t.getFullYear(), t.getMonth(), t.getDate());
+  }
+  function parseDate(s) {
+    var p = s.split("-");
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function money(n) {
+    var s = n > 0 ? "+" : n < 0 ? "\u2212" : "";
+    return s + "Rp" + nfIDR.format(Math.round(Math.abs(n)));
+  }
+  function compact(n) {
+    var a = Math.abs(n);
+    var s = n > 0 ? "+" : n < 0 ? "\u2212" : "";
+    if (a >= 10000) return s + Math.round(a / 1000) + "k";
+    if (a >= 1000) return s + (a / 1000).toFixed(1) + "k";
+    if (a >= 100) return s + Math.round(a);
+    if (a === 0) return "0";
+    return s + (Math.round(a * 10) / 10);
+  }
+  function sign(n) { return n > 0 ? "win" : n < 0 ? "loss" : "flat"; }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function formatRate(rate) { return "Rp" + new Intl.NumberFormat("id-ID", { maximumFractionDigits: 2 }).format(rate); }
+  function renderFxBadge(status) {
+    var el = $("#fxRateBadge");
+    if (!el) return;
+    var updated = localStorage.getItem(FX_UPDATED_KEY);
+    var label = "USD/IDR • " + formatRate(USD_TO_IDR);
+    if (status === "live") { label += " • LIVE"; el.classList.add("live"); el.classList.remove("stale"); }
+    else { label += " • terbaru"; el.classList.add("stale"); el.classList.remove("live"); }
+    el.textContent = label;
+    el.title = updated ? "Kurs terakhir diperbarui: " + new Date(Number(updated)).toLocaleString("id-ID") : "Kurs USD/IDR terbaru";
+  }
+  async function updateFxRate() {
+    renderFxBadge("stale");
+    var urls = [
+      "https://open.er-api.com/v6/latest/USD",
+      "https://api.frankfurter.app/latest?from=USD&to=IDR"
+    ];
+    for (var i = 0; i < urls.length; i++) {
+      try {
+        var r = await fetch(urls[i], { cache: "no-store" });
+        if (!r.ok) continue;
+        var data = await r.json();
+        var rate = data && data.rates ? Number(data.rates.IDR) : NaN;
+        if (isFinite(rate) && rate > 1000 && rate < 100000) {
+          USD_TO_IDR = rate;
+          localStorage.setItem(FX_RATE_KEY, String(rate));
+          localStorage.setItem(FX_UPDATED_KEY, String(Date.now()));
+          renderFxBadge("live");
+          return;
+        }
+      } catch (e) {}
+    }
+    renderFxBadge("stale");
+  }
+
+  /* ---------- Online database ---------- */
+  function getCloudConfig(){
+    return {
+      url: localStorage.getItem(SB_URL_KEY) || SUPABASE_PROJECT_URL,
+      key: localStorage.getItem(SB_KEY_KEY) || SUPABASE_PUBLISHABLE_KEY
+    };
+  }
+  function setOnlineStatus(el, text, kind){ if(!el) return; el.textContent=text||""; el.className="online-status"+(kind?" "+kind:""); }
+  function renderOnlineBadge(){
+    var b=$("#onlineBadge"), h=$("#heroDataStatus"); if(!b) return;
+    if(cloudAdmin){ b.textContent="☁ Online • Admin"; b.className="online-badge admin"; if(h) h.textContent="Online • Admin"; }
+    else if(cloudConfigured){ b.textContent="☁ Online"; b.className="online-badge online"; if(h) h.textContent="Online • Viewer"; }
+    else { b.textContent="☁ Setup Online"; b.className="online-badge"; if(h) h.textContent="Local"; }
+  }
+  function applyViewerMode(){
+    var formEl=$("#tradeForm"), notice=$("#viewerNotice"), cap=$("#capitalBtn");
+    var viewer=cloudConfigured && !cloudAdmin;
+    if(formEl) formEl.style.display=viewer?"none":"";
+    if(notice) notice.style.display=viewer?"block":"none";
+    if(cap) { cap.disabled=viewer; cap.title=viewer?"Login Admin untuk mengubah modal":"Atur modal awal"; }
+  }
+  async function initCloud(){
+    var c=getCloudConfig();
+    cloudConfigured=!!(c.url && c.key && window.supabase);
+    if(!cloudConfigured){ renderOnlineBadge(); return; }
+    try{
+      supabaseClient=window.supabase.createClient(c.url,c.key,{auth:{autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}});
+      var sess=await supabaseClient.auth.getSession();
+      await refreshAdminState(sess && sess.data ? sess.data.session : null);
+      renderOnlineBadge();
+      await loadCloudData();
+      supabaseClient.auth.onAuthStateChange(function(_event,session){ setTimeout(async function(){ await refreshAdminState(session); renderOnlineBadge(); },0); });
+    }catch(e){ cloudConfigured=false; supabaseClient=null; renderOnlineBadge(); }
+  }
+  async function refreshAdminState(session){
+    cloudAdmin=false;
+    if(!session || !supabaseClient) return;
+    try{
+      var r=await supabaseClient.from("admin_users").select("user_id").eq("user_id",session.user.id).maybeSingle();
+      cloudAdmin=!r.error && !!r.data;
+    }catch(e){ cloudAdmin=false; }
+  }
+  async function loadCloudData(){
+    if(!supabaseClient || cloudLoading) return false; cloudLoading=true;
+    try{
+      var tr=await supabaseClient.from("journal_trades").select("id,date,side,lot,entry,exit,pnl,note").order("date",{ascending:true});
+      if(tr.error) throw tr.error;
+      var st=await supabaseClient.from("journal_settings").select("key,value");
+      if(st.error) throw st.error;
+      trades=(tr.data||[]).filter(validTrade).map(function(x){ return {id:String(x.id),date:x.date,side:x.side,lot:x.lot==null?null:Number(x.lot),entry:x.entry==null?null:Number(x.entry),exit:x.exit==null?null:Number(x.exit),pnl:Number(x.pnl)||0,note:x.note||""}; });
+      var cap=(st.data||[]).filter(function(x){return x.key==="initial_capital";})[0];
+      if(cap) initialCapital=Number(cap.value)||0;
+      try{ localStorage.setItem(KEY,JSON.stringify(trades)); localStorage.setItem(CAPITAL_KEY,String(initialCapital)); }catch(e){}
+      renderAll();
+      return true;
+    }catch(e){ return false; } finally { cloudLoading=false; }
+  }
+  async function cloudUpsertTrade(rec){
+    if(!supabaseClient || !cloudAdmin) return {ok:false,error:"Admin belum login."};
+    var r=await supabaseClient.from("journal_trades").upsert({id:rec.id,date:rec.date,side:rec.side,lot:rec.lot,entry:rec.entry,exit:rec.exit,pnl:rec.pnl,note:rec.note},{onConflict:"id"});
+    return {ok:!r.error,error:r.error};
+  }
+  async function cloudDeleteTrade(id){
+    if(!supabaseClient || !cloudAdmin) return {ok:false,error:"Admin belum login."};
+    var r=await supabaseClient.from("journal_trades").delete().eq("id",id); return {ok:!r.error,error:r.error};
+  }
+  async function cloudSaveCapital(v){
+    if(!supabaseClient || !cloudAdmin) return {ok:false,error:"Admin belum login."};
+    var r=await supabaseClient.from("journal_settings").upsert({key:"initial_capital",value:String(v)},{onConflict:"key"}); return {ok:!r.error,error:r.error};
+  }
+  async function cloudImportLocal(){
+    if(!supabaseClient || !cloudAdmin) throw new Error("Admin belum login.");
+    for(var i=0;i<trades.length;i++){ var r=await cloudUpsertTrade(trades[i]); if(!r.ok) throw r.error||new Error("Gagal import trade"); }
+    var c=await cloudSaveCapital(initialCapital); if(!c.ok) throw c.error||new Error("Gagal menyimpan modal");
+    await loadCloudData();
+  }
+
+  /* ---------- Storage ---------- */
+  function validTrade(t) {
+    return t && typeof t.id === "string" && typeof t.date === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(t.date) && typeof t.pnl === "number" && isFinite(t.pnl);
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var arr = JSON.parse(raw);
+        if (Array.isArray(arr)) return arr.filter(validTrade);
+      }
+    } catch (e) { /* storage kosong atau tidak tersedia */ }
+    return [];
+  }
+  function persist() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(trades));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /* ---------- State ---------- */
+  var trades = load();
+  var initialCapital = Number(localStorage.getItem(CAPITAL_KEY) || 0);
+  // One-time migration from the previous USD journal to IDR.
+  // Existing V9 values are treated as USD and converted using the latest available USD/IDR rate stored at first launch.
+  try {
+    if (!localStorage.getItem(IDR_MIGRATION_KEY)) {
+      if (trades.length) {
+        trades = trades.map(function(t){
+          var copy = Object.assign({}, t);
+          copy.pnl = Math.round((Number(copy.pnl) || 0) * USD_TO_IDR);
+          return copy;
+        });
+        persist();
+      }
+      if (initialCapital > 0) {
+        initialCapital = Math.round(initialCapital * USD_TO_IDR);
+        localStorage.setItem(CAPITAL_KEY, String(initialCapital));
+      }
+      localStorage.setItem(IDR_MIGRATION_KEY, "1");
+    }
+  } catch (e) {}
+  var balance = initialCapital + trades.reduce(function(a,t){ return a + (Number(t.pnl)||0); }, 0);
+  var now = new Date();
+  var vy = now.getFullYear();
+  var vm = now.getMonth();
+  var selected = todayStr();
+  var editingId = null;
+  var pnlManual = false;
+  var deletingId = null;
+  var deleteTimer = null;
+
+  /* ---------- Aggregation ---------- */
+  function dayMap() {
+    var map = {};
+    trades.forEach(function (t) {
+      var o = map[t.date] || (map[t.date] = { net: 0, count: 0 });
+      o.net = round2(o.net + t.pnl);
+      o.count += 1;
+    });
+    return map;
+  }
+
+  function monthStats(map) {
+    var prefix = vy + "-" + pad(vm + 1) + "-";
+    var ts = trades.filter(function (t) { return t.date.indexOf(prefix) === 0; });
+    var net = 0, wins = 0, losses = 0, gw = 0, gl = 0;
+    ts.forEach(function (t) {
+      net += t.pnl;
+      if (t.pnl > 0) { wins++; gw += t.pnl; }
+      else if (t.pnl < 0) { losses++; gl += Math.abs(t.pnl); }
+    });
+    var dp = 0, dl = 0, best = null, worst = null;
+    var bestWinStreak = 0, currentWinStreak = 0;
+    ts.slice().sort(function (a, b) { return a.date === b.date ? (a.id > b.id ? 1 : -1) : (a.date > b.date ? 1 : -1); }).forEach(function (t) {
+      if (Number(t.pnl) > 0) { currentWinStreak++; if (currentWinStreak > bestWinStreak) bestWinStreak = currentWinStreak; }
+      else if (Number(t.pnl) < 0) currentWinStreak = 0;
+    });
+    Object.keys(map).forEach(function (k) {
+      if (k.indexOf(prefix) !== 0) return;
+      var n = map[k].net;
+      if (n > 0) dp++;
+      if (n < 0) dl++;
+      if (best === null || n > best) best = n;
+      if (worst === null || n < worst) worst = n;
+    });
+    return {
+      count: ts.length,
+      net: round2(net),
+      wins: wins,
+      losses: losses,
+      winRate: wins + losses > 0 ? (wins / (wins + losses)) * 100 : null,
+      pf: gl > 0 ? gw / gl : null,
+      hasWinOnly: gl === 0 && gw > 0,
+      dp: dp, dl: dl,
+      best: best, worst: worst, bestWinStreak: bestWinStreak
+    };
+  }
+
+  /* ---------- Render: ringkasan ---------- */
+  function renderSummary(map) {
+    var s = monthStats(map);
+    var netCls = s.net > 0 ? "pos" : s.net < 0 ? "neg" : "";
+    var pf = s.pf !== null ? s.pf.toFixed(2) : (s.hasWinOnly ? "Tanpa loss" : "-");
+    var wr = s.winRate !== null ? Math.round(s.winRate) + "%" : "-";
+    var best = s.best !== null && s.best > 0 ? money(s.best) : "-";
+    var worst = s.worst !== null && s.worst < 0 ? money(s.worst) : "-";
+    $("#summary").innerHTML =
+      '<div class="sum-item net"><div class="k">Net P/L bulan ini</div><div class="v ' + netCls + '">' + (s.count ? money(s.net) : "Rp0") + '</div></div>' +
+      '<div class="sum-item"><div class="k">Win rate</div><div class="v">' + wr + '</div><div class="s">' + s.wins + ' menang, ' + s.losses + ' kalah</div></div>' +
+      '<div class="sum-item"><div class="k">Jumlah trade</div><div class="v">' + s.count + '</div><div class="s">' + s.dp + ' hari profit, ' + s.dl + ' hari loss</div></div>' +
+      '<div class="sum-item"><div class="k">Profit factor</div><div class="v">' + pf + '</div><div class="s">Terbaik ' + best + ', terburuk ' + worst + '</div></div>' +
+      '<div class="sum-item"><div class="k">Modal awal</div><div class="v">' + (initialCapital > 0 ? money(initialCapital) : 'Belum diatur') + '</div><div class="s">Tekan Rp Modal untuk ubah</div></div>' +
+      '<div class="sum-item"><div class="k">Saldo sekarang</div><div class="v ' + (balance > initialCapital ? 'pos' : balance < initialCapital ? 'neg' : '') + '">' + (initialCapital > 0 ? money(balance) : 'Rp0') + '</div><div class="s">Modal + seluruh P/L</div></div>' +
+      '<div class="sum-item"><div class="k">Best streak</div><div class="v">' + s.bestWinStreak + ' win' + (s.bestWinStreak === 1 ? '' : 's') + '</div><div class="s">Kemenangan beruntun terbaik</div></div>';
+  }
+
+  /* ---------- Render: kalender ---------- */
+  function renderCalendar(map) {
+    var first = new Date(vy, vm, 1);
+    var off = (first.getDay() + 6) % 7;
+    var dim = new Date(vy, vm + 1, 0).getDate();
+    var rows = Math.ceil((off + dim) / 7);
+    var today = todayStr();
+
+    // Total per pekan dan nilai maksimum untuk intensitas warna
+    var weeks = [];
+    var maxDay = 0, maxWeek = 0;
+    for (var r = 0; r < rows; r++) {
+      var wn = 0, wc = 0;
+      for (var c = 0; c < 7; c++) {
+        var dn = r * 7 + c - off + 1;
+        if (dn < 1 || dn > dim) continue;
+        var info = map[ymd(vy, vm, dn)];
+        if (info) {
+          wn += info.net; wc += info.count;
+          if (Math.abs(info.net) > maxDay) maxDay = Math.abs(info.net);
+        }
+      }
+      wn = round2(wn);
+      weeks.push({ net: wn, count: wc });
+      if (Math.abs(wn) > maxWeek) maxWeek = Math.abs(wn);
+    }
+
+    function tint(abs, max) {
+      if (!max) return 14;
+      return Math.round(14 + 38 * (abs / max));
+    }
+
+    var html = "";
+    DAYS_SHORT.forEach(function (d) { html += '<div class="hd">' + d + '</div>'; });
+    html += '<div class="hd">Pekan</div>';
+
+    for (var r2 = 0; r2 < rows; r2++) {
+      for (var c2 = 0; c2 < 7; c2++) {
+        var n = r2 * 7 + c2 - off + 1;
+        if (n < 1 || n > dim) {
+          html += '<div class="cell out" aria-hidden="true"></div>';
+          continue;
+        }
+        var date = ymd(vy, vm, n);
+        var inf = map[date];
+        var cls = "cell day";
+        var style = "";
+        var label = n + " " + MONTHS[vm] + " " + vy;
+        var inner = '<span class="d">' + n + '</span>';
+        if (inf) {
+          cls += " " + sign(inf.net);
+          if (inf.net !== 0) style = ' style="--t:' + tint(Math.abs(inf.net), maxDay) + '%"';
+          inner += '<span class="amt">' + compact(inf.net) + '</span>' +
+                   '<span class="cnt"><b>' + inf.count + '</b><i> trade</i></span>';
+          label += ", net " + money(inf.net) + ", " + inf.count + " trade";
+        } else {
+          inner += '<span class="spacer"></span><span class="cnt">&nbsp;</span>';
+          label += ", belum ada trade";
+        }
+        if (date === selected) cls += " sel";
+        if (date === today) cls += " today";
+        html += '<button type="button" class="' + cls + '"' + style + ' data-date="' + date + '" aria-label="' + label + '"' +
+                (date === selected ? ' aria-pressed="true"' : ' aria-pressed="false"') + '>' + inner + '</button>';
+      }
+      var w = weeks[r2];
+      if (w.count) {
+        var wcls = "wk " + sign(w.net);
+        var wstyle = w.net !== 0 ? ' style="--t:' + tint(Math.abs(w.net), maxWeek) + '%"' : "";
+        html += '<div class="' + wcls + '"' + wstyle + '><span class="amt">' + compact(w.net) + '</span><span class="cnt">' + w.count + 'x</span></div>';
+      } else {
+        html += '<div class="wk"></div>';
+      }
+    }
+    $("#cal").innerHTML = html;
+  }
+
+  /* ---------- Render: panel hari ---------- */
+  function renderPanel() {
+    var d = parseDate(selected);
+    $("#dayTitle").textContent = DAYS_LONG[d.getDay()] + ", " + d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear();
+    var list = trades.filter(function (t) { return t.date === selected; });
+    var net = round2(list.reduce(function (a, t) { return a + t.pnl; }, 0));
+    if (list.length) {
+      var cls = net > 0 ? "pos" : net < 0 ? "neg" : "";
+      $("#dayNet").innerHTML = list.length + " trade, net <strong class=\"" + cls + "\">" + money(net) + "</strong>";
+    } else {
+      $("#dayNet").textContent = "Belum ada trade";
+    }
+
+    if (!list.length) {
+      $("#dayList").innerHTML = '<li class="empty">Belum ada trade di tanggal ini. Isi form di bawah untuk mencatat.</li>';
+      return;
+    }
+    $("#dayList").innerHTML = list.map(function (t) {
+      var meta = [];
+      if (typeof t.lot === "number") meta.push(nf.format(t.lot) + " lot");
+      if (typeof t.entry === "number" && typeof t.exit === "number") meta.push(nf.format(t.entry) + " \u2013 " + nf.format(t.exit));
+      var delTxt = deletingId === t.id ? "Yakin hapus?" : "Hapus";
+      var delCls = deletingId === t.id ? "link danger confirm" : "link danger";
+      return '<li class="tr ' + sign(t.pnl) + '">' +
+        '<div class="tr-top"><span class="side">' + (t.side === "sell" ? "Sell" : "Buy") + '</span>' +
+        '<span class="tr-meta">' + esc(meta.join(", ")) + '</span>' +
+        '<strong class="tr-pnl">' + money(t.pnl) + '</strong></div>' +
+        (t.note ? '<p class="tr-note">' + esc(t.note) + '</p>' : '') +
+        '<div class="tr-act"><button type="button" class="link" data-edit="' + esc(t.id) + '">Ubah</button>' +
+        '<button type="button" class="' + delCls + '" data-del="' + esc(t.id) + '">' + delTxt + '</button></div></li>';
+    }).join("");
+  }
+
+  /* ---------- V3: dashboard ---------- */
+  function allStats() {
+    var sorted = trades.slice().sort(function(a,b){ return a.date === b.date ? (a.id > b.id ? 1 : -1) : (a.date > b.date ? 1 : -1); });
+    var wins=0, losses=0, grossWin=0, grossLoss=0, net=0, best=null, worst=null;
+    var equity=0, peak=0, maxDD=0, curve=[];
+    var currentWin=0, currentLoss=0, bestWinStreak=0, bestLossStreak=0;
+    var lastSign=0, streak=0;
+    sorted.forEach(function(t){
+      var p=Number(t.pnl)||0; net += p; equity += p;
+      if(p>0){wins++;grossWin+=p;currentWin++;currentLoss=0;if(currentWin>bestWinStreak)bestWinStreak=currentWin;if(lastSign===1)streak++;else streak=1;lastSign=1;}
+      else if(p<0){losses++;grossLoss+=Math.abs(p);currentLoss++;currentWin=0;if(currentLoss>bestLossStreak)bestLossStreak=currentLoss;if(lastSign===-1)streak++;else streak=1;lastSign=-1;}
+      if(p!==0){if(best===null||p>best)best=p;if(worst===null||p<worst)worst=p;}
+      if(equity>peak)peak=equity; var dd=peak-equity;if(dd>maxDD)maxDD=dd;
+      curve.push({date:t.date,value:round2(equity)});
+    });
+    return {count:sorted.length,wins:wins,losses:losses,net:round2(net),grossWin:grossWin,grossLoss:grossLoss,
+      winRate:(wins+losses)?wins/(wins+losses)*100:null,pf:grossLoss?grossWin/grossLoss:null,best:best,worst:worst,maxDD:round2(maxDD),curve:curve,
+      bestWinStreak:bestWinStreak,bestLossStreak:bestLossStreak};
+  }
+
+  function renderV3Dashboard(){
+    var s=allStats(); var netCls=s.net>0?'pos':s.net<0?'neg':'';
+    var wr=s.winRate==null?'-':Math.round(s.winRate)+'%';
+    var pf=s.pf==null?(s.grossWin?'∞':'-'):s.pf.toFixed(2);
+    var best=s.best==null?'-':money(s.best);
+    $('#v3Stats').innerHTML=
+      '<div class="v3-card"><div class="label">Total P/L</div><div class="big '+netCls+'">'+money(s.net)+'</div><div class="small">All recorded trades</div></div>'+ 
+      '<div class="v3-card"><div class="label">Win rate</div><div class="big">'+wr+'</div><div class="small">'+s.wins+'W · '+s.losses+'L</div></div>'+ 
+      '<div class="v3-card"><div class="label">Total trades</div><div class="big">'+s.count+'</div><div class="small">'+(s.count?'Active journal':'No trades yet')+'</div></div>'+ 
+      '<div class="v3-card"><div class="label">Profit factor</div><div class="big">'+pf+'</div><div class="small">Gross win / gross loss</div></div>';
+    $('#v3Insights').innerHTML=
+      '<div class="insight"><div class="k">Best trade</div><div class="v pos">'+best+'</div></div>'+ 
+      '<div class="insight"><div class="k">Best streak</div><div class="v">'+s.bestWinStreak+' wins</div></div>';
+    renderEquityChart(s.curve);
+  }
+
+  function renderEquityChart(points){
+    var el=$('#equityChart'); if(!points.length){el.innerHTML='<div class="chart-empty">Belum ada trade untuk membuat grafik.</div>';return;}
+    var w=700,h=150,pad=12,vals=points.map(function(x){return x.value}),min=Math.min.apply(null,vals.concat([0])),max=Math.max.apply(null,vals.concat([0]));
+    if(min===max){min-=1;max+=1;} var span=max-min;
+    var pts=points.map(function(x,i){var xx=pad+(w-pad*2)*(points.length===1?0.5:i/(points.length-1));var yy=h-pad-(x.value-min)/span*(h-pad*2);return [xx,yy,x.value];});
+    var d=pts.map(function(p,i){return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)}).join(' ');
+    var zeroY=h-pad-(0-min)/span*(h-pad*2);
+    var last=pts[pts.length-1], cls=last[2]>=0?'#29c78a':'#ff5f6d';
+    el.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" role="img" aria-label="Grafik equity curve">'+
+      '<line x1="'+pad+'" y1="'+zeroY.toFixed(1)+'" x2="'+(w-pad)+'" y2="'+zeroY.toFixed(1)+'" stroke="currentColor" opacity=".12" stroke-dasharray="4 5"/>'+
+      '<path d="'+d+'" fill="none" stroke="'+cls+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<circle cx="'+last[0].toFixed(1)+'" cy="'+last[1].toFixed(1)+'" r="4" fill="'+cls+'"/>'+
+      '<text x="'+(w-pad)+'" y="14" text-anchor="end" fill="currentColor" opacity=".5" font-size="11">'+money(last[2])+'</text></svg>';
+  }
+
+  function renderAll() {
+    balance = initialCapital + trades.reduce(function(a,t){ return a + (Number(t.pnl)||0); }, 0);
+    var map = dayMap();
+    $("#monthTitle").textContent = MONTHS[vm] + " " + vy;
+    renderSummary(map);
+    renderCalendar(map);
+    renderPanel();
+    renderV3Dashboard();
+  }
+
+  function showPage(name){
+    document.querySelectorAll('.page').forEach(function(p){p.classList.toggle('active', p.id === 'page-' + name);});
+    document.querySelectorAll('[data-page]').forEach(function(b){b.classList.toggle('active', b.getAttribute('data-page') === name);});
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  document.querySelectorAll('[data-page]').forEach(function(btn){btn.addEventListener('click',function(){showPage(btn.getAttribute('data-page'));});});
+
+  /* ---------- Form ---------- */
+  var form = $("#tradeForm");
+  function setMsg(text, kind) {
+    var m = $("#msg");
+    m.textContent = text || "";
+    m.className = kind || "";
+  }
+  function resetForm() {
+    editingId = null;
+    pnlManual = false;
+    form.reset();
+    $("#sBuy").checked = true;
+    $("#formTitle").textContent = "Tambah trade";
+    $("#saveBtn").textContent = "Simpan trade";
+    $("#cancelBtn").hidden = true;
+  }
+  function numOrNull(v) {
+    if (v === "" || v == null) return null;
+    var n = Number(v);
+    return isFinite(n) ? n : null;
+  }
+  function currentSide() { return $("#sSell").checked ? "sell" : "buy"; }
+
+  function autoPnl() {
+    if (pnlManual) return;
+    var lot = numOrNull($("#fLot").value);
+    var en = numOrNull($("#fEntry").value);
+    var ex = numOrNull($("#fExit").value);
+    if (lot === null || en === null || ex === null || lot <= 0) return;
+    var dir = currentSide() === "buy" ? 1 : -1;
+    $("#fPnl").value = String(Math.round(dir * (ex - en) * lot * 100 * USD_TO_IDR));
+  }
+
+  ["#fLot", "#fEntry", "#fExit"].forEach(function (s) { $(s).addEventListener("input", autoPnl); });
+  $("#sBuy").addEventListener("change", autoPnl);
+  $("#sSell").addEventListener("change", autoPnl);
+  $("#fPnl").addEventListener("input", function () {
+    pnlManual = $("#fPnl").value !== "";
+  });
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!selected) { setMsg("Pilih tanggal di kalender dulu.", "err"); return; }
+    var pnlRaw = $("#fPnl").value;
+    var pnl = Number(pnlRaw);
+    if (pnlRaw === "" || !isFinite(pnl)) {
+      setMsg("Isi P/L dalam IDR, misalnya 125000 untuk profit atau -40000 untuk loss.", "err");
+      $("#fPnl").focus();
+      return;
+    }
+    var rec = {
+      id: editingId || uid(),
+      date: selected,
+      side: currentSide(),
+      lot: numOrNull($("#fLot").value),
+      entry: numOrNull($("#fEntry").value),
+      exit: numOrNull($("#fExit").value),
+      pnl: round2(pnl),
+      note: $("#fNote").value.trim().slice(0, 200)
+    };
+    var wasEditing = !!editingId;
+    if (wasEditing) {
+      trades = trades.map(function (t) { return t.id === editingId ? rec : t; });
+    } else {
+      trades.push(rec);
+    }
+    var ok = persist();
+    resetForm();
+    renderAll();
+    if (ok) setMsg(wasEditing ? "Trade diperbarui." : "Trade disimpan.", "ok");
+    else setMsg("Trade tampil di kalender, tapi browser menolak penyimpanan.", "err");
+    if (cloudConfigured) {
+      if (!cloudAdmin) setMsg("Tersimpan lokal. Login Admin agar tersimpan online.", "err");
+      else cloudUpsertTrade(rec).then(function(r){ if(!r.ok) setMsg("Tersimpan lokal, tetapi gagal sinkron ke database.", "err"); else setMsg(wasEditing ? "Trade diperbarui & tersinkron online." : "Trade disimpan & tersinkron online.", "ok"); });
+    }
+  });
+
+  $("#cancelBtn").addEventListener("click", function () {
+    resetForm();
+    setMsg("");
+  });
+
+  function startEdit(id) {
+    var t = trades.filter(function (x) { return x.id === id; })[0];
+    if (!t) return;
+    editingId = id;
+    pnlManual = true;
+    (t.side === "sell" ? $("#sSell") : $("#sBuy")).checked = true;
+    $("#fLot").value = t.lot != null ? t.lot : "";
+    $("#fEntry").value = t.entry != null ? t.entry : "";
+    $("#fExit").value = t.exit != null ? t.exit : "";
+    $("#fPnl").value = t.pnl;
+    $("#fNote").value = t.note || "";
+    $("#formTitle").textContent = "Ubah trade";
+    $("#saveBtn").textContent = "Perbarui trade";
+    $("#cancelBtn").hidden = false;
+    setMsg("");
+    $("#fLot").focus();
+  }
+
+  /* ---------- Interaksi ---------- */
+  function selectDate(date, scroll) {
+    selected = date;
+    deletingId = null;
+    resetForm();
+    setMsg("");
+    renderAll();
+    if (scroll && window.matchMedia("(max-width: 919px)").matches) {
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      $("#panel").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    }
+  }
+
+  $("#cal").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-date]");
+    if (b) selectDate(b.getAttribute("data-date"), true);
+  });
+
+  $("#dayList").addEventListener("click", function (e) {
+    var ed = e.target.closest("[data-edit]");
+    if (ed) { startEdit(ed.getAttribute("data-edit")); return; }
+    var del = e.target.closest("[data-del]");
+    if (!del) return;
+    var id = del.getAttribute("data-del");
+    if (deletingId === id) {
+      clearTimeout(deleteTimer);
+      deletingId = null;
+      trades = trades.filter(function (t) { return t.id !== id; });
+      if (editingId === id) resetForm();
+      var ok = persist();
+      renderAll();
+      setMsg(ok ? "Trade dihapus." : "Trade dihapus dari tampilan, tapi penyimpanan browser gagal diperbarui.", ok ? "ok" : "err");
+      if (cloudConfigured && cloudAdmin) cloudDeleteTrade(id).then(function(r){ if(!r.ok) setMsg("Trade terhapus lokal, tetapi gagal menghapus dari database.","err"); });
+      else if (cloudConfigured) setMsg("Trade terhapus lokal. Login Admin untuk mengubah database online.","err");
+    } else {
+      deletingId = id;
+      clearTimeout(deleteTimer);
+      deleteTimer = setTimeout(function () { deletingId = null; renderPanel(); }, 3000);
+      renderPanel();
+    }
+  });
+
+  function changeMonth(delta) {
+    var d = new Date(vy, vm + delta, 1);
+    vy = d.getFullYear();
+    vm = d.getMonth();
+    var t = new Date();
+    var pick = (t.getFullYear() === vy && t.getMonth() === vm) ? todayStr() : ymd(vy, vm, 1);
+    selectDate(pick, false);
+  }
+  $("#prevBtn").addEventListener("click", function () { changeMonth(-1); });
+  $("#nextBtn").addEventListener("click", function () { changeMonth(1); });
+  $("#todayBtn").addEventListener("click", function () {
+    var t = new Date();
+    vy = t.getFullYear();
+    vm = t.getMonth();
+    selectDate(todayStr(), false);
+  });
+
+  /* ---------- Tema ---------- */
+  var themeBtn = $("#themeBtn");
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem("xauusd-theme", theme); } catch (e) {}
+    themeBtn.textContent = theme === "dark" ? "☀︎" : "☾";
+  }
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem("xauusd-theme"); } catch (e) {}
+    applyTheme(saved === "light" ? "light" : "dark");
+  })();
+  var capitalBackdrop = $("#capitalBackdrop");
+  var capitalInput = $("#initialCapital");
+  function openCapital(){ if(cloudConfigured && !cloudAdmin){ openAdmin(); return; } capitalInput.value = initialCapital ? initialCapital.toFixed(2) : ""; capitalBackdrop.classList.add("open"); setTimeout(function(){capitalInput.focus();},40); }
+  function closeCapital(){ capitalBackdrop.classList.remove("open"); }
+  $("#capitalBtn").addEventListener("click", openCapital);
+  $("#capitalClose").addEventListener("click", closeCapital);
+  $("#capitalCancel").addEventListener("click", closeCapital);
+  $("#capitalSave").addEventListener("click", function(){
+    var v = Number(capitalInput.value);
+    if(!isFinite(v) || v < 0){ capitalInput.focus(); return; }
+    initialCapital = round2(v);
+    localStorage.setItem(CAPITAL_KEY, String(initialCapital));
+    balance = initialCapital + trades.reduce(function(a,t){return a + (Number(t.pnl)||0);},0);
+    closeCapital(); renderAll();
+    if (cloudConfigured) {
+      if (cloudAdmin) cloudSaveCapital(initialCapital).then(function(r){ if(!r.ok) alert("Modal tersimpan lokal, tetapi gagal disinkronkan ke database."); });
+      else setMsg("Modal tersimpan lokal. Login Admin agar tersimpan online.", "err");
+    }
+  });
+  capitalBackdrop.addEventListener("click", function(e){ if(e.target === capitalBackdrop) closeCapital(); });
+
+  themeBtn.addEventListener("click", function () {
+    var current = document.documentElement.getAttribute("data-theme") || "dark";
+    applyTheme(current === "dark" ? "light" : "dark");
+  });
+
+
+  /* ---------- Online controls ---------- */
+  var onlineSetupBackdrop=$("#onlineSetupBackdrop");
+  var adminBackdrop=$("#adminBackdrop");
+  function openSetup(){ var c=getCloudConfig(); $("#sbUrl").value=c.url; $("#sbKey").value=c.key; setOnlineStatus($("#onlineSetupStatus"),""," "); onlineSetupBackdrop.classList.add("open"); }
+  function closeSetup(){ onlineSetupBackdrop.classList.remove("open"); }
+  function openAdmin(){
+    if(!cloudConfigured){ openSetup(); return; }
+    $("#adminEmail").value=""; $("#adminPassword").value=""; setOnlineStatus($("#adminStatus"),cloudAdmin?"Admin aktif.":"Login sebagai admin untuk mengubah data.",cloudAdmin?"ok":""); adminBackdrop.classList.add("open");
+  }
+  function closeAdmin(){ adminBackdrop.classList.remove("open"); }
+  $("#onlineBadge").addEventListener("click",openAdmin);
+  $("#onlineSetupClose").addEventListener("click",closeSetup);
+  $("#onlineSetupCancel").addEventListener("click",closeSetup);
+  onlineSetupBackdrop.addEventListener("click",function(e){if(e.target===onlineSetupBackdrop)closeSetup();});
+  $("#onlineSetupSave").addEventListener("click",async function(){
+    var url=$("#sbUrl").value.trim().replace(/\/$/,""); var key=$("#sbKey").value.trim();
+    if(!/^https:\/\/[^ ]+\.supabase\.co$/.test(url) || !key){ setOnlineStatus($("#onlineSetupStatus"),"URL atau Publishable Key belum benar.","err"); return; }
+    localStorage.setItem(SB_URL_KEY,url); localStorage.setItem(SB_KEY_KEY,key);
+    setOnlineStatus($("#onlineSetupStatus"),"Menghubungkan...","");
+    await initCloud();
+    if(cloudConfigured){ closeSetup(); openAdmin(); } else setOnlineStatus($("#onlineSetupStatus"),"Gagal menghubungkan. Periksa URL dan key.","err");
+  });
+  $("#adminClose").addEventListener("click",closeAdmin);
+  adminBackdrop.addEventListener("click",function(e){if(e.target===adminBackdrop)closeAdmin();});
+  $("#adminLogin").addEventListener("click",async function(){
+    if(!supabaseClient){setOnlineStatus($("#adminStatus"),"Hubungkan Supabase dulu.","err");return;}
+    var email=$("#adminEmail").value.trim(), password=$("#adminPassword").value;
+    if(!email||!password){setOnlineStatus($("#adminStatus"),"Isi email dan password.","err");return;}
+    var r=await supabaseClient.auth.signInWithPassword({email:email,password:password});
+    if(r.error){setOnlineStatus($("#adminStatus"),r.error.message,"err");return;}
+    await refreshAdminState(r.data.session); renderOnlineBadge();
+    if(!cloudAdmin){setOnlineStatus($("#adminStatus"),"Login berhasil, tetapi akun ini belum terdaftar sebagai Admin.","err");return;}
+    await loadCloudData(); setOnlineStatus($("#adminStatus"),"Admin aktif dan data sudah disinkronkan.","ok");
+  });
+  $("#adminLogout").addEventListener("click",async function(){if(supabaseClient) await supabaseClient.auth.signOut(); cloudAdmin=false; renderOnlineBadge(); setOnlineStatus($("#adminStatus"),"Logout berhasil. Viewer tetap bisa melihat data.","ok");});
+  $("#adminSync").addEventListener("click",async function(){var ok=await loadCloudData();setOnlineStatus($("#adminStatus"),ok?"Data online berhasil disinkronkan.":"Gagal mengambil data online.",ok?"ok":"err");});
+  $("#adminImport").addEventListener("click",async function(){
+    if(!cloudAdmin){setOnlineStatus($("#adminStatus"),"Login sebagai Admin dulu.","err");return;}
+    if(!confirm("Import semua data lokal ke database online? Data dengan ID yang sama akan diperbarui.")) return;
+    try{ await cloudImportLocal(); setOnlineStatus($("#adminStatus"),"Import selesai. Semua perangkat sekarang bisa membaca data online.","ok"); }catch(e){ setOnlineStatus($("#adminStatus"),"Import gagal: "+(e.message||e),"err"); }
+  });
+
+  /* ---------- Pemilih bulan & tahun ---------- */
+  var pickerBackdrop = $("#pickerBackdrop");
+  var pickerMonth = $("#pickerMonth");
+  var pickerYear = $("#pickerYear");
+  var pickerMonths = $("#pickerMonths");
+  var pickerOpen = false;
+
+  function buildPicker() {
+    pickerMonth.innerHTML = MONTHS.map(function (m, i) {
+      return '<option value="' + i + '">' + m + '</option>';
+    }).join("");
+
+    var currentYear = new Date().getFullYear();
+    var minYear = Math.min(2020, currentYear - 5);
+    var maxYear = Math.max(currentYear + 5, vy + 5);
+    var years = [];
+    for (var y = minYear; y <= maxYear; y++) years.push(y);
+    pickerYear.innerHTML = years.map(function (y) {
+      return '<option value="' + y + '">' + y + '</option>';
+    }).join("");
+
+    pickerMonths.innerHTML = MONTHS.map(function (m, i) {
+      return '<button type="button" class="picker-month" data-month="' + i + '">' + m.slice(0,3) + '</button>';
+    }).join("");
+  }
+
+  function syncPicker() {
+    pickerMonth.value = String(vm);
+    pickerYear.value = String(vy);
+    pickerMonths.querySelectorAll(".picker-month").forEach(function (b) {
+      b.classList.toggle("active", Number(b.getAttribute("data-month")) === vm);
+    });
+  }
+
+  function openPicker() {
+    buildPicker();
+    syncPicker();
+    pickerBackdrop.classList.add("open");
+    pickerOpen = true;
+  }
+
+  function closePicker() {
+    pickerBackdrop.classList.remove("open");
+    pickerOpen = false;
+  }
+
+  $("#monthTitle").addEventListener("click", openPicker);
+  $("#pickerClose").addEventListener("click", closePicker);
+  $("#pickerCancel").addEventListener("click", closePicker);
+
+  pickerMonth.addEventListener("change", function () {
+    vm = Number(this.value);
+    syncPicker();
+  });
+
+  pickerYear.addEventListener("change", function () {
+    vy = Number(this.value);
+    syncPicker();
+  });
+
+  pickerMonths.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-month]");
+    if (!b) return;
+    vm = Number(b.getAttribute("data-month"));
+    syncPicker();
+  });
+
+  $("#pickerApply").addEventListener("click", function () {
+    var d = new Date(vy, vm, 1);
+    vy = d.getFullYear();
+    vm = d.getMonth();
+    selected = ymd(vy, vm, 1);
+    resetForm();
+    setMsg("");
+    closePicker();
+    renderAll();
+  });
+
+  pickerBackdrop.addEventListener("click", function (e) {
+    if (e.target === pickerBackdrop) closePicker();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && pickerOpen) closePicker();
+  });
+
+  /* ---------- Mulai ---------- */
+  renderAll();
+  renderOnlineBadge();
+  initCloud();
+  setInterval(function(){ if(cloudConfigured) loadCloudData(); }, 60000);
+  var fxRefreshBtn = $("#fxRefreshBtn");
+  if (fxRefreshBtn) {
+    fxRefreshBtn.addEventListener("click", async function () {
+      fxRefreshBtn.classList.add("spinning");
+      try { await updateFxRate(); } finally { fxRefreshBtn.classList.remove("spinning"); }
+    });
+  }
+  // Update kurs otomatis setiap 15 menit selama halaman terbuka.
+  setInterval(updateFxRate, 15 * 60 * 1000);
+  updateFxRate();
+})();
+</script>
+</body>
+</html>
